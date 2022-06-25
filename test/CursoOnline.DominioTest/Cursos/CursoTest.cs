@@ -1,4 +1,5 @@
-﻿using CursoOnline.DominioTest._util;
+﻿using CursoOnline.DominioTest._Builders;
+using CursoOnline.DominioTest._util;
 using ExpectedObjects;
 using System;
 using System.Collections.Generic;
@@ -7,11 +8,12 @@ using Xunit.Abstractions;
 
 namespace CursoOnline.DominioTest.Cursos
 {
-  public class CursoTest
+  public class CursoTest : IDisposable
   {
     //Atributos que serão usados no objeto anonimo
     private readonly ITestOutputHelper _output;
     private readonly string _nome;
+    private readonly string _descricao;
     private readonly double _cargaHoraria;
     private readonly PublicoAlvo _publicoAlvo;
     private readonly double _valor;
@@ -21,9 +23,15 @@ namespace CursoOnline.DominioTest.Cursos
     {
       _output = output;
       _nome = "Informatica básic";
+      _descricao = "uma descricao";
       _cargaHoraria = 80;
       _publicoAlvo = PublicoAlvo.Estudante;
       _valor = 958;
+    }
+
+    public void Dispose() 
+    {
+      _output.WriteLine("Dispose sendo executador");
     }
 
     [Fact(DisplayName = "Teste")]
@@ -34,13 +42,14 @@ namespace CursoOnline.DominioTest.Cursos
       var cursoEsperado = new //Criando objeto anonimo
       {
         Nome = _nome,
+        Descricao = _descricao,
         CargaHoraria = _cargaHoraria,
         PublicoAlvo = _publicoAlvo,
         Valor = _valor
       };
 
       //Ação do codigo
-      var curso = new Curso(cursoEsperado.Nome, cursoEsperado.CargaHoraria, cursoEsperado.PublicoAlvo, cursoEsperado.Valor); ;
+      var curso = new Curso(cursoEsperado.Nome, cursoEsperado.Descricao, cursoEsperado.CargaHoraria, cursoEsperado.PublicoAlvo, cursoEsperado.Valor); ;
 
       //Assert 
 
@@ -67,8 +76,7 @@ namespace CursoOnline.DominioTest.Cursos
 
       //Ação e Assert
       Assert.Throws<ArgumentException>(() => 
-            new Curso(nomeInvalido, _cargaHoraria,
-            _publicoAlvo, _valor)).ComMensagem("É esperado um nome do curso");
+            CursoBuilder.Novo().ComNome(nomeInvalido).Build()).ComMensagem("É esperado um nome do curso");
 
     }
 
@@ -82,8 +90,7 @@ namespace CursoOnline.DominioTest.Cursos
     {
       //Ação
       var mensagem = Assert.Throws<ArgumentException>(() =>
-            new Curso(_nome, cargaHorariaInvalida,
-            _publicoAlvo, _valor)).Message;
+            CursoBuilder.Novo().ComCargaHoraria(cargaHorariaInvalida).Build()).Message;
       //Assert
       Assert.Equal("É esperado carga horaria maior que 1", mensagem);
     }
@@ -99,8 +106,7 @@ namespace CursoOnline.DominioTest.Cursos
     {
       //Ação
       var mensagem= Assert.Throws<ArgumentException>(() =>
-            new Curso(_nome,_cargaHoraria,
-            _publicoAlvo, valorInvalido)).Message;
+            CursoBuilder.Novo().ComValor(valorInvalido).Build()).Message;
       //Assert
       Assert.Equal("É esperado valor maior que 1", mensagem);
     }
@@ -109,7 +115,15 @@ namespace CursoOnline.DominioTest.Cursos
 
   public class Curso
   {
-    public Curso(string nome, double cargaHoraria, PublicoAlvo publicoAlvo, double valor) 
+
+    public string Nome { get; private set; }
+    public string Descricao { get; set; }
+    public double CargaHoraria { get; private set; }
+    public PublicoAlvo PublicoAlvo { get; private set; }
+    public double Valor { get; private set; }
+
+
+    public Curso(string nome, string _descricao, double cargaHoraria, PublicoAlvo publicoAlvo, double valor) 
     {
       if (string.IsNullOrEmpty(nome)) 
         throw new ArgumentException("É esperado um nome do curso");
@@ -121,15 +135,12 @@ namespace CursoOnline.DominioTest.Cursos
         throw new ArgumentException("É esperado valor maior que 1");
 
       Nome = nome;
+      Descricao = _descricao;
       CargaHoraria = cargaHoraria;
       PublicoAlvo = publicoAlvo;
       Valor = valor;
     }
 
-    public string Nome { get; private set; }
-    public double  CargaHoraria { get; private set; }
-    public PublicoAlvo PublicoAlvo { get; private set; }
-    public double Valor { get; private set; }
   }
 
   public enum PublicoAlvo 
