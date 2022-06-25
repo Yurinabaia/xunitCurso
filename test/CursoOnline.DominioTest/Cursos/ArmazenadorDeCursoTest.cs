@@ -1,6 +1,8 @@
 ﻿using Bogus;
 using CursoOnline.Dominio.Cursos;
+using CursoOnline.DominioTest._util;
 using Moq;
+using System;
 using Xunit;
 namespace CursoOnline.DominioTest.Cursos
 {
@@ -19,7 +21,7 @@ namespace CursoOnline.DominioTest.Cursos
         Nome = fake.Random.Words(),
         Descricao = fake.Lorem.Paragraph(),
         CargaHoraria = fake.Random.Double(50, 100),
-        PublicoAlvoId = fake.Random.Int(1, 3),
+        PublicoAlvo = "Estudante",
         Valor = fake.Random.Double(50, 100)
       };
 
@@ -46,6 +48,16 @@ namespace CursoOnline.DominioTest.Cursos
         );
 
     }
+    //Validações
+    [Fact]
+    public void NaoDeveInformaPublicoAlvo() 
+    {
+      _cursoDto.PublicoAlvo = "Medico";
+      Assert.Throws<ArgumentException>(() => _armazenadorDeCurso.Armazenar(_cursoDto))
+        .ComMensagem("Publico Alvo inválido");
+
+
+    }
   }
 
   public interface ICursoRepositorio
@@ -62,9 +74,16 @@ namespace CursoOnline.DominioTest.Cursos
     }
     public void Armazenar(CursoDto cursoDto) 
     {
+
+                    //Passando o tipo     a opção a ser passada         criando a variavel   
+      Enum.TryParse(typeof(PublicoAlvo), cursoDto.PublicoAlvo, out var publicoAlvo);
+
+      if (publicoAlvo == null)
+        throw new ArgumentException("Publico Alvo inválido");
+
       //Criando objeto do curso
       var curso = new Curso(cursoDto.Nome, cursoDto.Descricao, cursoDto.CargaHoraria, 
-        PublicoAlvo.Estudante, cursoDto.Valor);
+        (PublicoAlvo) publicoAlvo, cursoDto.Valor);
 
       //Serviço de dominio
       _cursoRepositorio.Adicionar(curso);
@@ -77,7 +96,7 @@ namespace CursoOnline.DominioTest.Cursos
     public string Nome { get; internal set; }
     public string Descricao { get; internal set; }
     public double CargaHoraria { get; internal set; }
-    public int PublicoAlvoId { get; internal set; }
+    public string  PublicoAlvo { get; internal set; }
     public double Valor { get; internal set; }
   }
 }
