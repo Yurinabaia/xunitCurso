@@ -1,23 +1,42 @@
-﻿using ExpectedObjects;
+﻿using CursoOnline.DominioTest._util;
+using ExpectedObjects;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using Xunit.Abstractions;
+
 namespace CursoOnline.DominioTest.Cursos
 {
   public class CursoTest
   {
+    //Atributos que serão usados no objeto anonimo
+    private readonly ITestOutputHelper _output;
+    private readonly string _nome;
+    private readonly double _cargaHoraria;
+    private readonly PublicoAlvo _publicoAlvo;
+    private readonly double _valor;
+
+    //Construtor para mostra uma vez objeto anonimo
+    public CursoTest(ITestOutputHelper output)
+    {
+      _output = output;
+      _nome = "Informatica básic";
+      _cargaHoraria = 80;
+      _publicoAlvo = PublicoAlvo.Estudante;
+      _valor = 958;
+    }
+
     [Fact(DisplayName = "Teste")]
     public void DeveCriarCurso()
     {
 
       //Organização do código
-
       var cursoEsperado = new //Criando objeto anonimo
       {
-        Nome = "Informatica básica",
-        CargaHoraria = (double) 80,
-        PublicoAlvo = PublicoAlvo.Estudante,
-        Valor = (double) 950
+        Nome = _nome,
+        CargaHoraria = _cargaHoraria,
+        PublicoAlvo = _publicoAlvo,
+        Valor = _valor
       };
 
       //Ação do codigo
@@ -45,20 +64,12 @@ namespace CursoOnline.DominioTest.Cursos
     //Este método vai ser executado duas vezes, pois tem dois InlineData
     public void NaoDeveCursoTerNomeInvalido(string nomeInvalido) 
     {
-      //Organização do código
-      var cursoEsperado = new //Criando objeto anonimo
-      {
-        Nome = "Informatica básica",
-        CargaHoraria = (double)80,
-        PublicoAlvo = PublicoAlvo.Estudante,
-        Valor = (double)950
-      };
-      //Ação
-      var mensagem = Assert.Throws<ArgumentException>(() => 
-            new Curso(nomeInvalido, cursoEsperado.CargaHoraria, 
-            cursoEsperado.PublicoAlvo, cursoEsperado.Valor)).Message;
-      //Assert
-      Assert.Equal("É esperado um nome do curso", mensagem);
+
+      //Ação e Assert
+      Assert.Throws<ArgumentException>(() => 
+            new Curso(nomeInvalido, _cargaHoraria,
+            _publicoAlvo, _valor)).ComMensagem("É esperado um nome do curso");
+
     }
 
     //Theory cria exemplos de parametros que podem ser passados no teste
@@ -66,21 +77,13 @@ namespace CursoOnline.DominioTest.Cursos
     [InlineData(0)]
     [InlineData(-2)]
     [InlineData(-100)]
-    //Este método vai ser executado duas vezes, pois tem dois InlineData
+    //Este método vai ser executado três vezes, pois tem três InlineData
     public void NaoDeveTerCargaHorariaMaiorQue1(double cargaHorariaInvalida)
     {
-      //Organização do código
-      var cursoEsperado = new //Criando objeto anonimo
-      {
-        Nome = "Informatica básica",
-        CargaHoraria = (double)80,
-        PublicoAlvo = PublicoAlvo.Estudante,
-        Valor = (double)950
-      };
       //Ação
       var mensagem = Assert.Throws<ArgumentException>(() =>
-            new Curso(cursoEsperado.Nome, cargaHorariaInvalida,
-            cursoEsperado.PublicoAlvo, cursoEsperado.Valor)).Message;
+            new Curso(_nome, cargaHorariaInvalida,
+            _publicoAlvo, _valor)).Message;
       //Assert
       Assert.Equal("É esperado carga horaria maior que 1", mensagem);
     }
@@ -91,21 +94,13 @@ namespace CursoOnline.DominioTest.Cursos
     [InlineData(0)]
     [InlineData(-2)]
     [InlineData(-100)]
-    //Este método vai ser executado duas vezes, pois tem dois InlineData
+    //Este método vai ser executado três vezes, pois tem três InlineData
     public void NaoDeveTerCursoMenorQue1(double valorInvalido)
     {
-      //Organização do código
-      var cursoEsperado = new //Criando objeto anonimo
-      {
-        Nome = "Informatica básica",
-        CargaHoraria = (double)80,
-        PublicoAlvo = PublicoAlvo.Estudante,
-        Valor = (double)950
-      };
       //Ação
       var mensagem= Assert.Throws<ArgumentException>(() =>
-            new Curso(cursoEsperado.Nome, cursoEsperado.CargaHoraria,
-            cursoEsperado.PublicoAlvo, valorInvalido)).Message;
+            new Curso(_nome,_cargaHoraria,
+            _publicoAlvo, valorInvalido)).Message;
       //Assert
       Assert.Equal("É esperado valor maior que 1", mensagem);
     }
