@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using CursoOnline.Dominio.Cursos;
+using CursoOnline.DominioTest._Builders;
 using CursoOnline.DominioTest._util;
 using Moq;
 using System;
@@ -34,6 +35,8 @@ namespace CursoOnline.DominioTest.Cursos
     [Fact (DisplayName = "Criacao de curso")]
     public void DeveAdicionarCurso() 
     {
+      //Aqui temos exemplode de mock 
+      //Mock tem objetivo de verificar
       _armazenadorDeCurso.Armazenar(_cursoDto);
 
       //Validando se o comportamento foi validado ou não
@@ -55,48 +58,20 @@ namespace CursoOnline.DominioTest.Cursos
       _cursoDto.PublicoAlvo = "Medico";
       Assert.Throws<ArgumentException>(() => _armazenadorDeCurso.Armazenar(_cursoDto))
         .ComMensagem("Publico Alvo inválido");
-
-
     }
-  }
 
-  public interface ICursoRepositorio
-  {
-    void Adicionar(Curso curso);
-  }
-
-  public class ArmazenadorDeCurso 
-  {
-    private readonly ICursoRepositorio _cursoRepositorio;
-    public ArmazenadorDeCurso(ICursoRepositorio cursoRepositorio) 
+    [Fact]
+    public void NaoDeveAdicionarCursoComMesmoNomeDeOutroJaSalvo() 
     {
-      _cursoRepositorio = cursoRepositorio;
+      //Aqui temos exemplo de stub, quando setapiamos o mock
+      //Stub para dar comportamento ==> Setapiar.
+      var cursoJaSalvo = CursoBuilder.Novo().ComNome(_cursoDto.Nome).Build();
+
+      //Setapiar o nome e retorno o curso já salvo
+      _cursoRepositorioMock.Setup(r => r.ObterPeloNome(_cursoDto.Nome)).Returns(cursoJaSalvo);
+
+      Assert.Throws<ArgumentException>(() => _armazenadorDeCurso.Armazenar(_cursoDto))
+              .ComMensagem("Nome do curso já consta no banco de dados");
     }
-    public void Armazenar(CursoDto cursoDto) 
-    {
-
-                    //Passando o tipo     a opção a ser passada         criando a variavel   
-      Enum.TryParse(typeof(PublicoAlvo), cursoDto.PublicoAlvo, out var publicoAlvo);
-
-      if (publicoAlvo == null)
-        throw new ArgumentException("Publico Alvo inválido");
-
-      //Criando objeto do curso
-      var curso = new Curso(cursoDto.Nome, cursoDto.Descricao, cursoDto.CargaHoraria, 
-        (PublicoAlvo) publicoAlvo, cursoDto.Valor);
-
-      //Serviço de dominio
-      _cursoRepositorio.Adicionar(curso);
-      _cursoRepositorio.Adicionar(curso);
-
-    }
-  }
-  public class CursoDto
-  {
-    public string Nome { get; internal set; }
-    public string Descricao { get; internal set; }
-    public double CargaHoraria { get; internal set; }
-    public string  PublicoAlvo { get; internal set; }
-    public double Valor { get; internal set; }
   }
 }
