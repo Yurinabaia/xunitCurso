@@ -1,4 +1,5 @@
-﻿using CursoOnline.DominioTest._Builders;
+﻿using Bogus;
+using CursoOnline.DominioTest._Builders;
 using CursoOnline.DominioTest._util;
 using ExpectedObjects;
 using System;
@@ -22,11 +23,15 @@ namespace CursoOnline.DominioTest.Cursos
     public CursoTest(ITestOutputHelper output)
     {
       _output = output;
-      _nome = "Informatica básic";
-      _descricao = "uma descricao";
-      _cargaHoraria = 80;
+      var faker = new Faker();
+
+      _nome = faker.Random.Words();//Palavras aleatorias
+      _descricao = faker.Lorem.Paragraph();//Nome logon
+      _cargaHoraria = faker.Random.Double(50,1000);//numeros de double entre 50 a 1000
       _publicoAlvo = PublicoAlvo.Estudante;
-      _valor = 958;
+      _valor = faker.Random.Double(50,100);
+
+
     }
 
     public void Dispose() 

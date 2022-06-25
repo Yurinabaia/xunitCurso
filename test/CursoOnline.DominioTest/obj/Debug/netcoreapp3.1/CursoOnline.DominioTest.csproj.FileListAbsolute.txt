@@ -96,3 +96,4 @@ C:\Users\yuri.duarte\source\repos\CursoOnline\test\CursoOnline.DominioTest\obj\D
 C:\Users\yuri.duarte\source\repos\CursoOnline\test\CursoOnline.DominioTest\obj\Debug\netcoreapp3.1\CursoOnline.DominioTest.pdb
 C:\Users\yuri.duarte\source\repos\CursoOnline\test\CursoOnline.DominioTest\obj\Debug\netcoreapp3.1\CursoOnline.DominioTest.genruntimeconfig.cache
 C:\Users\yuri.duarte\source\repos\CursoOnline\test\CursoOnline.DominioTest\bin\Debug\netcoreapp3.1\ExpectedObjects.dll
+C:\Users\yuri.duarte\source\repos\CursoOnline\test\CursoOnline.DominioTest\bin\Debug\netcoreapp3.1\Bogus.dll
