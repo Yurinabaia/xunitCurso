@@ -1,9 +1,9 @@
 ﻿using Bogus;
+using CursoOnline.Dominio.Cursos;
 using CursoOnline.DominioTest._Builders;
 using CursoOnline.DominioTest._util;
 using ExpectedObjects;
 using System;
-using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,10 +13,15 @@ namespace CursoOnline.DominioTest.Cursos
   {
     //Atributos que serão usados no objeto anonimo
     private readonly ITestOutputHelper _output;
+
     private readonly string _nome;
+
     private readonly string _descricao;
+
     private readonly double _cargaHoraria;
+
     private readonly PublicoAlvo _publicoAlvo;
+
     private readonly double _valor;
 
     //Construtor para mostra uma vez objeto anonimo
@@ -27,14 +32,12 @@ namespace CursoOnline.DominioTest.Cursos
 
       _nome = faker.Random.Words();//Palavras aleatorias
       _descricao = faker.Lorem.Paragraph();//Nome logon
-      _cargaHoraria = faker.Random.Double(50,1000);//numeros de double entre 50 a 1000
+      _cargaHoraria = faker.Random.Double(50, 1000);//numeros de double entre 50 a 1000
       _publicoAlvo = PublicoAlvo.Estudante;
-      _valor = faker.Random.Double(50,100);
-
-
+      _valor = faker.Random.Double(50, 100);
     }
 
-    public void Dispose() 
+    public void Dispose()
     {
       _output.WriteLine("Dispose sendo executador");
     }
@@ -66,8 +69,6 @@ namespace CursoOnline.DominioTest.Cursos
       cursoEsperado.ToExpectedObject().ShouldMatch(curso);//Usei a biblioteca ExpectedObject
     }
 
-
-
     //--------------------------Validações Baby Step----------------------------------------
     //Fiz três teste, testando cada parametro isoladamente, logo o parametro testado deve está errado e outros corretos
 
@@ -76,13 +77,12 @@ namespace CursoOnline.DominioTest.Cursos
     [InlineData("")]
     [InlineData(null)]
     //Este método vai ser executado duas vezes, pois tem dois InlineData
-    public void NaoDeveCursoTerNomeInvalido(string nomeInvalido) 
+    public void NaoDeveCursoTerNomeInvalido(string nomeInvalido)
     {
 
       //Ação e Assert
-      Assert.Throws<ArgumentException>(() => 
+      Assert.Throws<ArgumentException>(() =>
             CursoBuilder.Novo().ComNome(nomeInvalido).Build()).ComMensagem("É esperado um nome do curso");
-
     }
 
     //Theory cria exemplos de parametros que podem ser passados no teste
@@ -100,7 +100,6 @@ namespace CursoOnline.DominioTest.Cursos
       Assert.Equal("É esperado carga horaria maior que 1", mensagem);
     }
 
-
     //Theory cria exemplos de parametros que podem ser passados no teste
     [Theory]
     [InlineData(0)]
@@ -110,49 +109,10 @@ namespace CursoOnline.DominioTest.Cursos
     public void NaoDeveTerCursoMenorQue1(double valorInvalido)
     {
       //Ação
-      var mensagem= Assert.Throws<ArgumentException>(() =>
-            CursoBuilder.Novo().ComValor(valorInvalido).Build()).Message;
+      var mensagem = Assert.Throws<ArgumentException>(() =>
+             CursoBuilder.Novo().ComValor(valorInvalido).Build()).Message;
       //Assert
       Assert.Equal("É esperado valor maior que 1", mensagem);
     }
-  }
-
-
-  public class Curso
-  {
-
-    public string Nome { get; private set; }
-    public string Descricao { get; set; }
-    public double CargaHoraria { get; private set; }
-    public PublicoAlvo PublicoAlvo { get; private set; }
-    public double Valor { get; private set; }
-
-
-    public Curso(string nome, string _descricao, double cargaHoraria, PublicoAlvo publicoAlvo, double valor) 
-    {
-      if (string.IsNullOrEmpty(nome)) 
-        throw new ArgumentException("É esperado um nome do curso");
-
-      if (cargaHoraria < 1)
-        throw new ArgumentException("É esperado carga horaria maior que 1");
-
-      if (valor < 1)
-        throw new ArgumentException("É esperado valor maior que 1");
-
-      Nome = nome;
-      Descricao = _descricao;
-      CargaHoraria = cargaHoraria;
-      PublicoAlvo = publicoAlvo;
-      Valor = valor;
-    }
-
-  }
-
-  public enum PublicoAlvo 
-  {
-    Estudante, 
-    Universitário,
-    Empregado, 
-    Empreendedor
   }
 }
